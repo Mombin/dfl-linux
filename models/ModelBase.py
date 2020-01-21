@@ -89,7 +89,7 @@ class ModelBase(object):
             io.log_info ("\nModel first run. Enter model options as default for each run.")
 
         if ask_enable_autobackup and (self.iter == 0 or ask_override):
-            default_autobackup = False if self.iter == 0 else self.options.get('autobackup',False)
+            default_autobackup = True if self.iter == 0 else self.options.get('autobackup',False)
             self.options['autobackup'] = io.input_bool("Enable autobackup? (y/n ?:help skip:%s) : " % (yn_str[default_autobackup]) , default_autobackup, help_message="Autobackup model files with preview every hour for last 15 hours. Latest backup located in model/<>_autobackups/01")
         else:
             self.options['autobackup'] = self.options.get('autobackup', False)
@@ -116,7 +116,7 @@ class ModelBase(object):
                     self.options.pop('target_epoch')
 
         if ask_batch_size and (self.iter == 0 or ask_override):
-            default_batch_size = 0 if self.iter == 0 else self.options.get('batch_size',0)
+            default_batch_size = 10 if self.iter == 0 else self.options.get('batch_size',0)
             self.options['batch_size'] = max(0, io.input_int("Batch_size (?:help skip:%d) : " % (default_batch_size), default_batch_size, help_message="Larger batch size is better for NN's generalization, but it can cause Out of Memory error. Tune this value for your videocard manually."))
         else:
             self.options['batch_size'] = self.options.get('batch_size', 0)
@@ -230,7 +230,7 @@ class ModelBase(object):
                     io.destroy_window(wnd_name)
                 else:
                     self.sample_for_preview = self.generate_next_sample()
-                self.last_sample = self.sample_for_preview
+                    self.last_sample = self.sample_for_preview
 
         ###Generate text summary of model hyperparameters
         #Find the longest key name and value string. Used as column widths.
@@ -241,34 +241,44 @@ class ModelBase(object):
         width_total = width_name + width_value + 2 #Plus 2 for ": "
 
         model_summary_text = []
-        model_summary_text += [f'=={" Model Summary ":=^{width_total}}=='] # Model/status summary
-        model_summary_text += [f'=={" "*width_total}==']
-        model_summary_text += [f'=={"Model name": >{width_name}}: {self.get_model_name(): <{width_value}}=='] # Name
-        model_summary_text += [f'=={" "*width_total}==']
-        model_summary_text += [f'=={"Current iteration": >{width_name}}: {str(self.iter): <{width_value}}=='] # Iter
-        model_summary_text += [f'=={" "*width_total}==']
-
-        model_summary_text += [f'=={" Model Options ":-^{width_total}}=='] # Model options
-        model_summary_text += [f'=={" "*width_total}==']
+        #model_summary_text += ['=={:=^ width_total}=='.format(" Model Summary ")] # Model/status summary
+        model_summary_text += ['=={}    =='.format(" Model Summary ")] # Model/status summary
+        model_summary_text += ['=={}    =='.format(" "*width_total)]
+        #model_summary_text += ['=={:>width_name}: {:<width_value}=='.format("Model name", self.get_model_name())] # Name
+        model_summary_text += ['=={}: {}  =='.format("Model name", self.get_model_name())] # Name
+        model_summary_text += ['=={}    =='.format(" "*width_total)]
+        #model_summary_text += ['=={:>width_name}: {:<width_value}=='.format("Current iteration", str(self.iter))] # Iter
+        model_summary_text += ['=={}: {}  =='.format("Current iteration", str(self.iter))] # Iter
+        model_summary_text += ['=={}    =='.format(" "*width_total)]
+        #model_summary_text += ['=={:-^width_total}=='.format("Model Options")] # Model options
+        model_summary_text += ['=={}    =='.format("Model Options")] # Model options
+        model_summary_text += ['=={}    =='.format(" "*width_total)]
         for key in self.options.keys():
-            model_summary_text += [f'=={key: >{width_name}}: {str(self.options[key]): <{width_value}}=='] # self.options key/value pairs
-        model_summary_text += [f'=={" "*width_total}==']
+            #model_summary_text += ['=={:>width_name}: {:<width_value}=='.format(key, str(self.options[key]))] # self.options key/value pairs
+            model_summary_text += ['=={}: {}    =='.format(key, str(self.options[key]))] # self.options key/value pairs
+        model_summary_text += ['=={}    =='.format(" "*width_total)]
 
-        model_summary_text += [f'=={" Running On ":-^{width_total}}=='] # Training hardware info
-        model_summary_text += [f'=={" "*width_total}==']
+        #model_summary_text += ['=={:-^width_total}=='.format(" Running On ")] # Training hardware info
+        model_summary_text += ['=={}    =='.format(" Running On ")] # Training hardware info
+        model_summary_text += ['=={}    =='.format(" "*width_total)]
         if self.device_config.multi_gpu:
-            model_summary_text += [f'=={"Using multi_gpu": >{width_name}}: {"True": <{width_value}}=='] # multi_gpu
-            model_summary_text += [f'=={" "*width_total}==']
+            #model_summary_text += ['=={: >width_name}: {: <width_value}=='.format("Using multi_gpu", "True")] # multi_gpu
+            model_summary_text += ['=={}: {}    =='.format("Using multi_gpu", "True")] # multi_gpu
+            model_summary_text += ['=={}    =='.format(" "*width_total)]
         if self.device_config.cpu_only:
-            model_summary_text += [f'=={"Using device": >{width_name}}: {"CPU": <{width_value}}=='] # cpu_only
+            #model_summary_text += ['=={: >{width_name}}: {: <{width_value}}=='.format("Using device", "CPU")] # cpu_only
+            model_summary_text += ['=={}}: {}    =='.format("Using device", "CPU")] # cpu_only
         else:
             for idx in self.device_config.gpu_idxs:
-                model_summary_text += [f'=={"Device index": >{width_name}}: {idx: <{width_value}}=='] # GPU hardware device index
-                model_summary_text += [f'=={"Name": >{width_name}}: {nnlib.device.getDeviceName(idx): <{width_value}}=='] # GPU name
-                vram_str = f'{nnlib.device.getDeviceVRAMTotalGb(idx):.2f}GB' # GPU VRAM - Formated as #.## (or ##.##)
-                model_summary_text += [f'=={"VRAM": >{width_name}}: {vram_str: <{width_value}}==']
-        model_summary_text += [f'=={" "*width_total}==']
-        model_summary_text += [f'=={"="*width_total}==']
+                #model_summary_text += ['=={: >{width_name}}: {: <{width_value}}=='.format("Device index", idx)] # GPU hardware device index
+                model_summary_text += ['=={}: {}    =='.format("Device index", idx)] # GPU hardware device index
+                #model_summary_text += ['=={: >{width_name}}: {: <{width_value}}=='.format("Name", nnlib.device.getDeviceName(idx))] # GPU name
+                model_summary_text += ['=={}: {}    =='.format("Name", nnlib.device.getDeviceName(idx))] # GPU name
+                vram_str = '{:.2f}GB'.format(nnlib.device.getDeviceVRAMTotalGb(idx)) # GPU VRAM - Formated as #.## (or ##.##)
+                #model_summary_text += ['=={: >{width_name}}: {: <{width_value}}=='.format("VRAM", vram_str)]
+                model_summary_text += ['=={}: {}    =='.format("VRAM", vram_str)]
+        model_summary_text += ['=={}    =='.format(" "*width_total)]
+        model_summary_text += ['=={}    =='.format("="*width_total)]
 
         if not self.device_config.cpu_only and self.device_config.gpu_vram_gb[0] <= 2: # Low VRAM warning
             model_summary_text += ["/!\\"]
@@ -393,11 +403,11 @@ class ModelBase(object):
                     next_idx_packup_path = self.autobackups_path / next_idx_str
 
                     if idx_backup_path.exists():
-                        if i == 15:
-                            Path_utils.delete_all_files(idx_backup_path)
-                        else:
-                            next_idx_packup_path.mkdir(exist_ok=True)
-                            Path_utils.move_all_files (idx_backup_path, next_idx_packup_path)
+                        #if i == 15:
+                        #    Path_utils.delete_all_files(idx_backup_path)
+                        #else:
+                        next_idx_packup_path.mkdir(exist_ok=True)
+                        Path_utils.move_all_files (idx_backup_path, next_idx_packup_path)
 
                     if i == 1:
                         idx_backup_path.mkdir(exist_ok=True)

@@ -73,7 +73,7 @@ class InteractBase(object):
     def log_err(self, msg, end='\n'):
         if self.pg_bar is not None:
             print ("\n")
-        print (f'{self.error_log_line_prefix}{msg}', end=end)
+        print ('{}{}'.format(self.error_log_line_prefix, msg), end=end)
 
     def named_window(self, wnd_name):
         if wnd_name not in self.named_windows:

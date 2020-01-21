@@ -40,8 +40,8 @@ class ConverterConfig(object):
     def ask_settings(self):
         s = """Choose sharpen mode: \n"""
         for key in self.sharpen_dict.keys():
-            s += f"""({key}) {self.sharpen_dict[key]}\n"""
-        s += f"""?:help Default: {list(self.sharpen_dict.keys())[0]} : """
+            s += """({}) {}\n""".format(key, self.sharpen_dict[key])
+        s += """?:help Default: {} : """.format(list(self.sharpen_dict.keys())[0])
         self.sharpen_mode = io.input_int (s, 0, valid_list=self.sharpen_dict.keys(), help_message="Enhance details by applying sharpen filter.")
 
         if self.sharpen_mode != 0:
@@ -49,8 +49,8 @@ class ConverterConfig(object):
 
         s = """Choose super resolution mode: \n"""
         for key in self.super_res_dict.keys():
-            s += f"""({key}) {self.super_res_dict[key]}\n"""
-        s += f"""?:help Default: {list(self.super_res_dict.keys())[0]} : """
+            s += """({}) {}\n""".format(key, self.super_res_dict[key])
+        s += """?:help Default: {} : """.format(list(self.super_res_dict.keys())[0])
         self.super_resolution_mode = io.input_int (s, 0, valid_list=self.super_res_dict.keys(), help_message="Enhance details by applying superresolution network.")
 
     def toggle_sharpen_mode(self):
@@ -78,10 +78,10 @@ class ConverterConfig(object):
     #overridable
     def __str__(self):
         r = ""
-        r += f"sharpen_mode : {self.sharpen_dict[self.sharpen_mode]}\n"
+        r += "sharpen_mode : {}\n".format(self.sharpen_dict[self.sharpen_mode])
         if self.sharpen_mode != 0:
-            r += f"sharpen_amount : {self.sharpen_amount}\n"        
-        r += f"super_resolution_mode : {self.super_res_dict[self.super_resolution_mode]}\n"
+            r += "sharpen_amount : {}\n".format(self.sharpen_amount)        
+        r += "super_resolution_mode : {}\n".format(self.super_res_dict[self.super_resolution_mode])
         return r
 
 class ConverterConfigMasked(ConverterConfig):
@@ -205,8 +205,8 @@ class ConverterConfigMasked(ConverterConfig):
 
         s = """Choose mode: \n"""
         for key in self.mode_dict.keys():
-            s += f"""({key}) {self.mode_dict[key]}\n"""
-        s += f"""Default: {self.default_mode} : """
+            s += """({}) {}\n""".format(key, self.mode_dict[key])
+        s += """Default: {} : """.format(self.default_mode)
 
         mode = io.input_int (s, self.default_mode)
 
@@ -222,15 +222,15 @@ class ConverterConfigMasked(ConverterConfig):
         if self.face_type == FaceType.FULL:
             s = """Choose mask mode: \n"""
             for key in self.full_face_mask_mode_dict.keys():
-                s += f"""({key}) {self.full_face_mask_mode_dict[key]}\n"""
-            s += f"""?:help Default: 1 : """
+                s += """({}) {}\n""".format(key, self.full_face_mask_mode_dict[key])
+            s += """?:help Default: 1 : """
 
             self.mask_mode = io.input_int (s, 1, valid_list=self.full_face_mask_mode_dict.keys(), help_message="If you learned the mask, then option 1 should be choosed. 'dst' mask is raw shaky mask from dst aligned images. 'FAN-prd' - using super smooth mask by pretrained FAN-model from predicted face. 'FAN-dst' - using super smooth mask by pretrained FAN-model from dst face. 'FAN-prd*FAN-dst' or 'learned*FAN-prd*FAN-dst' - using multiplied masks.")
         else:
             s = """Choose mask mode: \n"""
             for key in self.half_face_mask_mode_dict.keys():
-                s += f"""({key}) {self.half_face_mask_mode_dict[key]}\n"""
-            s += f"""?:help , Default: 1 : """
+                s += """({}) {}\n""".format(key, self.half_face_mask_mode_dict[key])
+            s += """?:help , Default: 1 : """
             self.mask_mode = io.input_int (s, 1, valid_list=self.half_face_mask_mode_dict.keys(), help_message="If you learned the mask, then option 1 should be choosed. 'dst' mask is raw shaky mask from dst aligned images.")
 
         if 'raw' not in self.mode:
@@ -274,35 +274,35 @@ class ConverterConfigMasked(ConverterConfig):
     def __str__(self):
         r = (
             """ConverterConfig:\n"""
-            f"""Mode: {self.mode}\n"""
+            """Mode: {}\n""".format(self.mode)
             )
 
         if self.mode == 'hist-match' or self.mode == 'hist-match-bw':
-            r += f"""masked_hist_match: {self.masked_hist_match}\n"""
+            r += """masked_hist_match: {}\n""".format(self.masked_hist_match)
 
         if self.mode == 'hist-match' or self.mode == 'hist-match-bw' or self.mode == 'seamless-hist-match':
-            r += f"""hist_match_threshold: {self.hist_match_threshold}\n"""
+            r += """hist_match_threshold: {}\n""".format(self.hist_match_threshold)
 
         if self.face_type == FaceType.FULL:
-            r += f"""mask_mode: { self.full_face_mask_mode_dict[self.mask_mode] }\n"""
+            r += """mask_mode: {}\n""".format(self.full_face_mask_mode_dict[self.mask_mode])
         else:
-            r += f"""mask_mode: { self.half_face_mask_mode_dict[self.mask_mode] }\n"""
+            r += """mask_mode: {}\n""".format(self.half_face_mask_mode_dict[self.mask_mode])
 
         if 'raw' not in self.mode:
-            r += (f"""erode_mask_modifier: {self.erode_mask_modifier}\n"""
-                  f"""blur_mask_modifier: {self.blur_mask_modifier}\n"""
-                  f"""motion_blur_power: {self.motion_blur_power}\n""")
+            r += ("""erode_mask_modifier: {}\n"""
+                  """blur_mask_modifier: {}\n"""
+                  """motion_blur_power: {}\n""".format(self.erode_mask_modifier, self.blur_mask_modifier, self.motion_blur_power))
 
-        r += f"""output_face_scale: {self.output_face_scale}\n"""
+        r += """output_face_scale: {}\n""".format(self.output_face_scale)
 
         if 'raw' not in self.mode:
-            r += f"""color_transfer_mode: { self.ctm_dict[self.color_transfer_mode]}\n"""
+            r += """color_transfer_mode: { }\n""".format(self.ctm_dict[self.color_transfer_mode])
 
         r += super().__str__()
 
         if 'raw' not in self.mode:
-            r += (f"""color_degrade_power: {self.color_degrade_power}\n"""
-                  f"""export_mask_alpha: {self.export_mask_alpha}\n""")
+            r += ("""color_degrade_power: {}\n"""
+                  """export_mask_alpha: {}\n""".format(self.color_degrade_powerm, self.export_mask_alpha))
 
         r += "================"
 
@@ -348,6 +348,6 @@ class ConverterConfigFaceAvatar(ConverterConfig):
     #override
     def __str__(self):
         return ("ConverterConfig: \n"
-                f"add_source_image : {self.add_source_image}\n") + \
+                "add_source_image : {}\n".format(self.add_source_image)) + \
                 super().__str__() + "================"
 

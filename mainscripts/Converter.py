@@ -136,13 +136,13 @@ class ConvertSubprocessor(Subprocessor):
                 self.log_info ( 'no faces found for %s, copying without faces' % (filename_path.name) )
 
                 if filename_path.suffix == '.png':
-                    shutil.copy (filename, output_filename )
+                    shutil.copy (str(filename), str(output_filename) )
                 else:
                     img_bgr = cv2_imread(filename)
-                    cv2_imwrite (output_filename, img_bgr)
+                    cv2_imwrite (str(output_filename), img_bgr)
 
                 if need_return_image:
-                    img_bgr = cv2_imread(filename)
+                    img_bgr = cv2_imread(str(filename))
                     pf.image = img_bgr
             else:
                 if cfg.type == ConverterConfig.TYPE_MASKED:
@@ -164,7 +164,7 @@ class ConvertSubprocessor(Subprocessor):
                                                         pf.next_temporal_frame_infos )
 
                 if output_filename is not None and final_img is not None:
-                    cv2_imwrite (output_filename, final_img )
+                    cv2_imwrite (str(output_filename), final_img )
 
                 if need_return_image:
                     pf.image = final_img

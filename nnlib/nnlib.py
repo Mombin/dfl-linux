@@ -540,7 +540,7 @@ NLayerDiscriminator = nnlib.NLayerDiscriminator
 
         class SelfAttention(KL.Layer):
             def __init__(self, nc, squeeze_factor=8, **kwargs):
-                assert nc//squeeze_factor > 0, f"Input channels must be >= {squeeze_factor}, recieved nc={nc}"
+                assert nc//squeeze_factor > 0, "Input channels must be >= {}, recieved nc={}".format(squeeze_factor, nc)
 
                 self.nc = nc
                 self.squeeze_factor = squeeze_factor

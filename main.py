@@ -7,8 +7,8 @@ from utils import Path_utils
 from utils import os_utils
 from pathlib import Path
 
-if sys.version_info[0] < 3 or (sys.version_info[0] == 3 and sys.version_info[1] < 6):
-    raise Exception("This program requires at least Python 3.6")
+if sys.version_info[0] < 3 or (sys.version_info[0] == 3 and sys.version_info[1] < 5):
+    raise Exception("This program requires at least Python 3.5")
 
 class fixPathAction(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
@@ -139,7 +139,7 @@ if __name__ == "__main__":
     p.add_argument('--pretraining-data-dir', action=fixPathAction, dest="pretraining_data_dir", default=None, help="Optional dir of extracted faceset that will be used in pretraining mode.")
     p.add_argument('--model-dir', required=True, action=fixPathAction, dest="model_dir", help="Model dir.")
     p.add_argument('--model', required=True, dest="model_name", choices=Path_utils.get_all_dir_names_startswith ( Path(__file__).parent / 'models' , 'Model_'), help="Type of model")
-    p.add_argument('--no-preview', action="store_true", dest="no_preview", default=False, help="Disable preview window.")
+    p.add_argument('--no-preview', action="store_true", dest="no_preview", default=True, help="Disable preview window.")
     p.add_argument('--debug', action="store_true", dest="debug", default=False, help="Debug samples.")
     p.add_argument('--cpu-only', action="store_true", dest="cpu_only", default=False, help="Train on CPU.")
     p.add_argument('--force-gpu-idx', type=int, dest="force_gpu_idx", default=-1, help="Force to choose this GPU idx.")
